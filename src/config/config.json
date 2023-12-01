@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "mayonesa12345",
+    "database": "dbnoticias",
+    "host": "localhost",
+    "dialect": "postgresql",
+    "operatorAlias": false
+  },
+  "staging": {
+    "username": "postgres",
+    "password": "12345",
+    "database": "dbnoticias",
+    "host": "localhost",
+    "dialect": "postgresql",
+    "operatorAlias": false
+  },
+  "production": {
+    "username": "postgres",
+    "password": "12345",
+    "database": "dbnoticias",
+    "host": "localhost",
+    "dialect": "postgresql",
+    "operatorAlias": false
+  }
+}
