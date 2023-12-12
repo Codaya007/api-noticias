@@ -1,4 +1,3 @@
-require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const { Sequelize, Op } = require("sequelize");
@@ -28,6 +27,7 @@ const sequelize =
           keepAlive: true,
         },
         ssl: true,
+        logging: false,
       })
     : new Sequelize(
         `postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/${DB_NAME}`,

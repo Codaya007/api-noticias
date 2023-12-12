@@ -6,4 +6,6 @@ const accountController = new AccountControllerClass();
 
 router.get("/", accountController.list);
 
+router.post("/login", accountController.login);
+
 module.exports = router;

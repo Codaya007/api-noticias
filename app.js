@@ -1,3 +1,4 @@
+require("dotenv").config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -8,6 +9,7 @@ var indexRouter = require("./src/routes/index");
 var usersRouter = require("./src/routes/users.routes");
 var rolesRouter = require("./src/routes/roles.routes");
 var accountRouter = require("./src/routes/accounts.routes");
+var newsRouter = require("./src/routes/news.routes");
 
 var app = express();
 
@@ -25,6 +27,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/roles", rolesRouter);
 app.use("/accounts", accountRouter);
+app.use("/news", newsRouter);
 
 // Sync models
 let models = require("./src/models");

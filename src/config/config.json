@@ -5,7 +5,8 @@
     "database": "dbnoticias",
     "host": "localhost",
     "dialect": "postgresql",
-    "operatorAlias": false
+    "operatorAlias": false,
+    "logging": false
   },
   "staging": {
     "username": "postgres",
@@ -13,7 +14,8 @@
     "database": "dbnoticias",
     "host": "localhost",
     "dialect": "postgresql",
-    "operatorAlias": false
+    "operatorAlias": false,
+    "logging": false
   },
   "production": {
     "username": "postgres",
@@ -21,6 +23,7 @@
     "database": "dbnoticias",
     "host": "localhost",
     "dialect": "postgresql",
-    "operatorAlias": false
+    "operatorAlias": false,
+    "logging": false
   }
 }
