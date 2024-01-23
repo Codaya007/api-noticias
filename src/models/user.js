@@ -70,6 +70,8 @@ module.exports = (sequelize) => {
     User.hasOne(models.account, { foreignkey: "id_user", as: "account" });
 
     User.belongsTo(models.role, { foreignKey: "id_role" });
+
+    // User.belongsTo(models.role, { foreignKey: "id_role" });
   };
 
   return User;

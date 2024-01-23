@@ -4,14 +4,18 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
+const cors = require("cors");
 
 var indexRouter = require("./src/routes/index");
 var usersRouter = require("./src/routes/users.routes");
 var rolesRouter = require("./src/routes/roles.routes");
 var accountRouter = require("./src/routes/accounts.routes");
 var newsRouter = require("./src/routes/news.routes");
+var commentRouter = require("./src/routes/comments.routes");
 
 var app = express();
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -23,11 +27,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use(cors());
+
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/roles", rolesRouter);
 app.use("/accounts", accountRouter);
 app.use("/news", newsRouter);
+app.use("/comments", commentRouter);
 
 // Sync models
 let models = require("./src/models");
@@ -55,8 +62,8 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  // res.json(res.locals.error);
-  res.render("error");
+  res.json(res.locals?.error);
+  // res.render("error");
 });
 
 module.exports = app;

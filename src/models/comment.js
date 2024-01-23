@@ -16,9 +16,15 @@ module.exports = (sequelize) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
-    date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false,
+    // date: {
+    //   type: DataTypes.DATEONLY,
+    //   allowNull: false,
+    // },
+    latitude: {
+      type: DataTypes.FLOAT,
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
     },
     external_id: {
       type: DataTypes.UUID,
@@ -29,7 +35,7 @@ module.exports = (sequelize) => {
   });
 
   Comment.associate = function (models) {
-    Comment.belongsTo(models.user, { foreignKey: "author" }); // Cambiado a "User" en lugar de "user"
+    Comment.belongsTo(models.user, { foreignKey: "writeBy" }); // Cambiado a "User" en lugar de "user"
     Comment.belongsTo(models.news, { foreignKey: "newsId" }); // Agregada relación con el modelo de Noticia
   };
 

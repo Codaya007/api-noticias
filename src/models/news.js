@@ -37,7 +37,7 @@ module.exports = (sequelize) => {
   });
 
   News.associate = function (models) {
-    News.belongsTo(models.user, { foreignKey: "id_user" });
+    News.belongsTo(models.user, { foreignKey: "author" });
   };
 
   return News;

@@ -2,6 +2,7 @@ const models = require("../models");
 const Comment = models.comment;
 const User = models.user;
 const News = models.news;
+const { v4: uuidv4 } = require("uuid");
 
 class CommentController {
   async list(req, res) {
@@ -50,38 +51,40 @@ class CommentController {
   }
 
   async create(req, res) {
-    const { body, status, date } = req.body;
-    let { writeBy, newsId } = req.body;
-
-    if (!body || !date || !writeBy || !newsId) {
-      return res.status(400).json({
-        msg: "ERROR",
-        code: 400,
-        tag: "No se han enviado todos los datos necesarios",
-      });
-    }
-
-    const user = await User.findOne({ where: { external_id: writeBy } });
-    const news = await News.findOne({ where: { external_id: newsId } });
-
-    if (!user || !news) {
-      return res.status(404).json({
-        msg: "ERROR",
-        code: 404,
-        tag: "El usuario o la noticia especificados no existen",
-      });
-    }
-
-    const data = {
-      body,
-      status: status || true,
-      date,
-      external_id: uuidv4(),
-      writeBy: user.id,
-      newsId: news.id,
-    };
-
     try {
+      const { body, status, latitude, longitude } = req.body;
+      let { writeBy, newsId } = req.body;
+
+      if (!body || !writeBy || !newsId) {
+        return res.status(400).json({
+          msg: "ERROR",
+          code: 400,
+          tag: "No se han enviado todos los datos necesarios",
+        });
+      }
+
+      const user = await User.findOne({ where: { external_id: writeBy } });
+      const news = await News.findOne({ where: { external_id: newsId } });
+
+      if (!user || !news) {
+        return res.status(404).json({
+          msg: "ERROR",
+          code: 404,
+          tag: "El usuario o la noticia especificados no existen",
+        });
+      }
+
+      const data = {
+        body,
+        status: status || true,
+        // date,
+        external_id: uuidv4(),
+        writeBy: user.id,
+        newsId: news.id,
+        latitude,
+        longitude,
+      };
+
       const newComment = await Comment.create(data);
 
       res.status(201);

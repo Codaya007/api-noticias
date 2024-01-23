@@ -10,10 +10,12 @@ const extensionsImagen = ["jpg", "jpeg", "png", "gif"]; // Definir las extension
 
 class NewsController {
   async list(req, res) {
+    const news = await News.findAll({});
+
+    console.log(news);
+
     const newsList = await News.findAll({
-      include: [
-        { model: User, as: "author", attributes: ["names", "lastnames"] },
-      ],
+      include: [{ model: User, attributes: ["names", "lastnames"] }],
       attributes: [
         "title",
         "body",
@@ -37,9 +39,7 @@ class NewsController {
 
     const newsItem = await News.findOne({
       where: { external_id },
-      include: [
-        { model: User, as: "author", attributes: ["names", "lastnames"] },
-      ],
+      include: [{ model: User, attributes: ["names", "lastnames"] }],
       attributes: [
         "title",
         "body",
@@ -140,6 +140,7 @@ class NewsController {
           for (let index = 0; index < files.length; index++) {
             var file = files[index];
 
+            const baseURL = "http://localhost:3000";
             var name = uuidv4();
             var extension = file.originalFilename
               .replace(/\?.*$/, "")
@@ -158,6 +159,8 @@ class NewsController {
 
             var newName = path.join(uploadDir, name + "." + extension);
 
+            const relativePath = "/uploads" + "/" + name + "." + extension;
+
             fs.rename(file.filepath, newName, function (err) {
               if (err) {
                 console.error(err);
@@ -168,7 +171,8 @@ class NewsController {
                 res.json({
                   msg: "OK",
                   tag: "Se guardó el archivo con éxito",
-                  url: "/uploads" + "/" + name + "." + extension,
+                  url: baseURL + relativePath,
+                  relativePath,
                   code: 200,
                 });
               }
