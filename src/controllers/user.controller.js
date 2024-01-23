@@ -140,6 +140,92 @@ class UserController {
       });
     }
   }
+
+  async createNormalUser(req, res) {
+    const {
+      names,
+      lastnames,
+      address,
+      phoneNumber,
+      birthDate,
+      email,
+      password,
+    } = req.body;
+    // let { id_role } = req.body;
+
+    if (
+      !names ||
+      !lastnames ||
+      // !address ||
+      // !phoneNumber ||
+      !email ||
+      !password
+      // !birthDate
+      // !id_role
+    ) {
+      return res.status(400).json({
+        msg: "ERROR",
+        code: 400,
+        tag: "No se han enviado todos los datos",
+      });
+    }
+    const role = await Role.findOne({ name: "Usuario" });
+
+    if (!role) {
+      return res.status(404).json({
+        msg: "ERROR",
+        code: 404,
+        tag: "El rol especificado no existe",
+      });
+    }
+
+    const id_role = role.id;
+
+    const data = {
+      names,
+      lastnames,
+      address,
+      phoneNumber,
+      birthDate,
+      id_role,
+      external_id: uuidv4(),
+      account: {
+        email,
+        password,
+      },
+    };
+
+    const transaction = await models.sequelize.transaction();
+    try {
+      const newUser = await User.create(data, {
+        include: { model: Account, as: "account", transaction },
+      });
+
+      await transaction.commit();
+
+      // role.external_id = uuidv4();
+      // await role.save();
+
+      delete newUser.account?.dataValues?.password;
+
+      // console.log(newUser);
+
+      res.status(201);
+      res.json({
+        msg: "OK",
+        code: 201,
+        results: newUser,
+      });
+    } catch (error) {
+      if (transaction) await transaction.rollback();
+
+      res.json({
+        msg: "ERROR",
+        code: 400,
+        tag: error.message || "Algo salió mal",
+      });
+    }
+  }
 }
 
 module.exports = UserController;

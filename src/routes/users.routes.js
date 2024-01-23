@@ -14,4 +14,6 @@ router.get("/:external_id", userController.getById);
 
 router.post("/", userController.create);
 
+router.post("/auth/register", userController.createNormalUser);
+
 module.exports = router;
