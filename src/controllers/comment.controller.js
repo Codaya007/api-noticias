@@ -46,6 +46,7 @@ class CommentController {
         ],
         offset,
         limit,
+        order: [["updatedAt", "DESC"]],
       });
       console.log({ data });
       const { count, rows: comments } = data;
@@ -106,6 +107,7 @@ class CommentController {
         ],
         offset,
         limit,
+        order: [["updatedAt", "DESC"]],
       });
       // console.log({ data });
       const { count, rows: comments } = data;
@@ -169,10 +171,10 @@ class CommentController {
     const comment = await Comment.findOne({
       where: { external_id },
       include: [
-        { model: User, as: "author", attributes: ["names", "lastnames"] },
+        { model: User, as: "user", attributes: ["names", "lastnames"] },
         { model: News, as: "news", attributes: ["title"] },
       ],
-      attributes: ["body", "status", "date", ["external_id", "id"]],
+      attributes: ["body", "status", "createdAt", ["external_id", "id"]],
     });
 
     if (!comment) {
