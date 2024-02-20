@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 const model = require("../models");
 const Account = model.account;
+const User = model.user;
 
 const isAuth = (req, res, next) => {
   const { authorization: Authorization } = req.headers;
@@ -35,12 +36,13 @@ const isAuth = (req, res, next) => {
       });
     }
 
-    console.log({ decoded });
+    // console.log({ decoded });
 
     const { external: external_id, email } = decoded;
 
     const account = await Account.findOne({
       where: { email, external_id },
+      include: [{ model: User, attributes: ["id", "names", "lastnames"] }],
     });
 
     if (!account) {
@@ -50,6 +52,8 @@ const isAuth = (req, res, next) => {
         code: 403,
       });
     }
+
+    req.me = account?.id_user;
 
     next();
   });

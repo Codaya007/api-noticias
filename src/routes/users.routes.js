@@ -10,6 +10,8 @@ const users = [{ name: "Viviana", lastname: "Calva", birth: "24/01/2002" }];
 /* GET users listing. */
 router.get("/", isAuth, userController.list);
 
+router.get("/me", isAuth, userController.getMe);
+
 router.get("/:external_id", userController.getById);
 
 router.post("/", userController.create);

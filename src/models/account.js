@@ -38,6 +38,7 @@ module.exports = (sequelize) => {
 
   Account.associate = function (models) {
     Account.belongsTo(models.user, { foreignKey: "id_user" });
+    // Account.belongsTo(models.User, { foreignKey: "id_user", as: "user" }); // Añade la asociación con la tabla User y especifica la clave externa id_user
   };
 
   // Account.associate = (models) => {

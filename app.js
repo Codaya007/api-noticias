@@ -15,19 +15,18 @@ var commentRouter = require("./src/routes/comments.routes");
 
 var app = express();
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "jade");
+
+app.use(cors("*"));
 
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-
-app.use(cors());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
