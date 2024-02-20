@@ -74,7 +74,7 @@ class CommentController {
     try {
       let { newsId, page, limit, ...where } = req.query;
 
-      const writeBy = req.me;
+      where.writeBy = req.me;
       // Convertir page y limit a enteros y establecer valores predeterminados
       page = parseInt(page) || 1;
       limit = parseInt(limit) || 10; // Valor predeterminado de 10 si no se especifica
@@ -88,7 +88,7 @@ class CommentController {
       // Calcular el desplazamiento
       const offset = (page - 1) * limit;
 
-      // console.log({ where, offset });
+      console.log({ where, offset });
 
       const data = await Comment.findAndCountAll({
         where,

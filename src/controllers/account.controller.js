@@ -1,6 +1,7 @@
 const model = require("../models");
 const Account = model.account;
 const User = model.user;
+const Role = model.role;
 const { JWT_SECRET } = process.env;
 const jwt = require("jsonwebtoken");
 
@@ -36,6 +37,13 @@ class AccountController {
           model: User,
           as: "user",
           attributes: ["names", "lastnames", "address"],
+          include: [
+            {
+              model: Role,
+              as: "role",
+              attributes: ["name"],
+            },
+          ],
         },
       ],
     });

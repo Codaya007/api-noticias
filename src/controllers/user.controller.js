@@ -4,6 +4,12 @@ const Role = models.role;
 const Account = models.account;
 const { v4: uuidv4 } = require("uuid");
 
+function removeUndefinedFields(obj) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => value !== undefined)
+  );
+}
+
 class UserController {
   async list(req, res) {
     const users = await User.findAll({
@@ -66,11 +72,14 @@ class UserController {
 
     const user = await User.findOne({
       where: { id },
-      include: [{ model: Account, as: "cuenta", attributes: ["email"] }],
-      include: [{ model: Role, as: "role", attributes: ["name"] }],
+      include: [
+        { model: Account, as: "account", attributes: ["email"] },
+        { model: Role, as: "role", attributes: ["name"] },
+      ],
+      // include: [],
       attributes: [
-        "lastnames",
         ["external_id", "id"],
+        "lastnames",
         "names",
         "address",
         "phoneNumber",
@@ -184,37 +193,25 @@ class UserController {
       birthDate,
       email,
       password,
+      status,
     } = req.body;
     let { id_role } = req.body;
+    const { external_id } = req.params;
 
-    if (
-      !names ||
-      !lastnames ||
-      !address ||
-      !phoneNumber ||
-      !email ||
-      !password ||
-      !birthDate ||
-      !id_role
-    ) {
-      return res.status(400).json({
-        msg: "ERROR",
-        code: 400,
-        tag: "No se han enviado todos los datos",
-      });
+    if (id_role) {
+      const role = await Role.findOne({ external_id: id_role });
+
+      if (!role) {
+        return res.status(404).json({
+          msg: "ERROR",
+          code: 404,
+          tag: "El rol especificado no existe",
+        });
+      }
+      id_role = role.id;
     }
-    const role = await Role.findOne({ external_id: id_role });
 
-    if (!role) {
-      return res.status(404).json({
-        msg: "ERROR",
-        code: 404,
-        tag: "El rol especificado no existe",
-      });
-    }
-    id_role = role.id;
-
-    const data = {
+    let dataUser = {
       names,
       lastnames,
       address,
@@ -222,34 +219,58 @@ class UserController {
       birthDate,
       id_role,
       external_id: uuidv4(),
-      account: {
-        email,
-        password,
-      },
+    };
+
+    let dataAcount = {
+      email,
+      password,
+      status,
     };
 
     const transaction = await models.sequelize.transaction();
     try {
-      const newUser = await User.create(data, {
-        include: { model: Account, as: "account", transaction },
+      dataUser = removeUndefinedFields(dataUser);
+      dataAcount = removeUndefinedFields(dataAcount);
+
+      const user = await User.findOne({ external_id });
+
+      if (!user) {
+        return res.status(404).json({
+          msg: "Usuario no encontrado",
+        });
+      }
+
+      console.log({ dataUser });
+
+      user.set(dataUser);
+      await user.save();
+
+      console.log({ user });
+
+      const newAccount = await Account.update(dataAcount, {
+        where: {
+          id_user: user.id,
+        },
+        transaction,
       });
 
-      await transaction.commit();
+      // newUser.external_id = uuidv4();
+      // await role.save();
 
-      role.external_id = uuidv4();
-      await role.save();
+      await transaction.commit();
 
       res.status(201);
       res.json({
         msg: "OK",
         code: 201,
-        results: newUser,
+        results: user,
       });
     } catch (error) {
+      console.log({ error });
       if (transaction) await transaction.rollback();
 
-      res.json({
-        msg: "ERROR",
+      res.status(500).json({
+        msg: "Algo salió mal",
         code: 400,
         tag: error.message || "Algo salió mal",
       });
