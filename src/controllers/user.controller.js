@@ -232,7 +232,7 @@ class UserController {
       dataUser = removeUndefinedFields(dataUser);
       dataAcount = removeUndefinedFields(dataAcount);
 
-      const user = await User.findOne({ external_id });
+      const user = await User.findOne({ where: { external_id } });
 
       if (!user) {
         return res.status(404).json({
@@ -240,12 +240,8 @@ class UserController {
         });
       }
 
-      console.log({ dataUser });
-
       user.set(dataUser);
       await user.save();
-
-      console.log({ user });
 
       const newAccount = await Account.update(dataAcount, {
         where: {
